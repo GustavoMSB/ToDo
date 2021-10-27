@@ -1,5 +1,4 @@
 import { useState } from 'react'
-
 import '../styles/tasklist.scss'
 
 import { FiTrash, FiCheckSquare } from 'react-icons/fi'
@@ -16,14 +15,31 @@ export function TaskList() {
 
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if(newTaskTitle !== ''){
+      setTasks([...tasks , {id: Math.floor(Math.random() * 100000), title:newTaskTitle, isComplete: false}]);
+      setNewTaskTitle('');
+    }
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const idTask = tasks.findIndex(task => task.id === id);
+
+    const dataTask = [...tasks];
+
+    dataTask[idTask].isComplete = !dataTask[idTask].isComplete;
+    setTasks([...dataTask])
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    const idTask = tasks.findIndex(task => task.id === id);
+
+    const dataTask = tasks;
+
+    dataTask.splice(idTask, 1);
+
+    setTasks([...dataTask]);
   }
 
   return (
@@ -38,7 +54,7 @@ export function TaskList() {
             onChange={(e) => setNewTaskTitle(e.target.value)}
             value={newTaskTitle}
           />
-          <button type="submit" data-testid="add-task-button" onClick={handleCreateNewTask}>
+          <button type="submit" data-testid="add-task-button" onClick={handleCreateNewTask} onSubmit={(event) => event.preventDefault()}>
             <FiCheckSquare size={16} color="#fff"/>
           </button>
         </div>
@@ -58,7 +74,7 @@ export function TaskList() {
                   />
                   <span className="checkmark"></span>
                 </label>
-                <p>{task.title}</p>
+                <p>{task.title} id: {task.id}</p>
               </div>
 
               <button type="button" data-testid="remove-task-button" onClick={() => handleRemoveTask(task.id)}>
